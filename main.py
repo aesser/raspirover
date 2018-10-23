@@ -16,7 +16,7 @@ while canRun:
     try:
 
         rr.set_led1(led1)
-        rr.set_led2(1)
+        rr.set_led2(led2)
 
         tmp = led2
         led2 = led1
