@@ -70,13 +70,15 @@ def turn():
 
 def main_loop():
     """The main loop controlling the robot"""
+    init_wait = 1
+
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     logging.info("Initialisation")
     rr = RRB3()
 
     calibrate_compass(rr)
-    blink_lights(rr, 20)
-    time.sleep(20)
+    blink_lights(rr, 5)
+    time.sleep(init_wait)
 
     logging.info("Start main loop")
     running = False
