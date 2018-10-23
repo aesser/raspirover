@@ -3,32 +3,15 @@ import sys
 import logging
 from rrb3 import *
 
-import board
-import busio
-import adafruit_bno055
+from Adafruit_BNO055 import BNO055
 
-def calibrate_compass(rr):
+def calibrate_compass(bno):
     """function to calibrate compass"""
     logging.info("calibrating compass")
-
-    i2c = busio.I2C(board.SCL, board.SDA)
-    sensor = adafruit_bno055.BNO055(i2c)
-
-    system = 0
-    gyro = 0
-    accel = 0
-    mag = 0
-
-    sensor.getCalibration(system, gyro, accel, mag)
-    logging.debug("Sys:");
-    logging.debug(system);
-    logging.debug(" G:");
-    logging.debug(gyro);
-    logging.debug(" A:");
-    logging.debug(accel);
-    logging.debug(" M:");
-    logging.debug(mag);
-
+    calib_status = 0
+    while calib_status != 3:
+    	# Read the calibration status, 0=uncalibrated and 3=fully calibrated.
+    	calib_status = bno.get_calibration_status()[0]
     logging.info("calibrating compass .. done")
 
 system = gyro = accel = mag = 0;
@@ -67,6 +50,13 @@ def turn():
     """functio to turn the robot"""
     pass
 
+def get_heading(bno, tol=1.e-1):
+    """function to return heading of robot"""
+    prev_heading, heading = bno.read_euler()[0], bno.read_euler()[0]
+    while abs(heading - prev_heading) > tol:
+	prev_heading, heading = heading, bno.read_euler()[0]
+    logging.debug("Measured heading is {}".format(heading))
+    return heading
 
 def main_loop():
     """The main loop controlling the robot"""
@@ -76,7 +66,11 @@ def main_loop():
     logging.info("Initialisation")
     rr = RRB3()
 
-    calibrate_compass(rr)
+    bno = BNO055.BNO055(serial_port='/dev/ttyUSB0', rst=18)
+    if not bno.begin():
+    	raise RuntimeError('Failed to initialize BNO055! Is the sensor connected?')
+
+    calibrate_compass(bno)
     blink_lights(rr, 5)
     time.sleep(init_wait)
 
@@ -86,6 +80,9 @@ def main_loop():
     measure_distance(rr, 5)
     measure_distance(rr,10)
     measure_distance(rr,20)
+
+    get_heading(bno)
+
     while running:
         pass
 
