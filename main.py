@@ -1,15 +1,19 @@
 import time
+import sys
 import logging
 from rrb3 import *
 
 
 def calibrate_compass(rr):
     """function to calibrate compass"""
-    pass
+    logging.info("calibrating compass")
+
+    logging.info("calibrating compass .. done")
 
 
 def blink_lights(rr, n_blinks, sleep_time=0.5):
     """show blinking lights"""
+    logging.info("blinking lights")
     led1 = 0
     led2 = 1
     for i in range(n_blinks):
@@ -40,12 +44,15 @@ def turn():
 
 def main_loop():
     """The main loop controlling the robot"""
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    logging.info("Initialisation")
     rr = RRB3()
 
     calibrate_compass(rr)
     blink_lights(rr, 20)
     time.sleep(20)
 
+    logging.info("Start main loop")
     running = False
     while running:
         pass
