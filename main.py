@@ -48,10 +48,15 @@ def blink_lights(rr, n_blinks, sleep_time=0.5):
         time.sleep(sleep_time)
 
 
-def measure_distance():
+def measure_distance(rr, n_distance, sleep_time=0.001):
     """measure distance and average"""
-    pass
-
+    sum_distance = 0 
+    for i in range(n_distance):
+        sum_distance += rr.get_distance()
+        time.sleep(sleep_time)
+    distance = sum_distance/n_distance
+    logging.debug("Measured distance is {} (average of N{})".format(distance, n_distance))
+    return distance
 
 def go_direction():
     """functioni to run the robot a ceratin direction"""
@@ -75,6 +80,10 @@ def main_loop():
 
     logging.info("Start main loop")
     running = False
+    measure_distance(rr, 1)
+    measure_distance(rr, 5)
+    measure_distance(rr,10)
+    measure_distance(rr,20)
     while running:
         pass
 
