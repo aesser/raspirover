@@ -1,4 +1,5 @@
 import time
+import logging
 from rrb3 import *
 
 rr = RRB3()
@@ -6,12 +7,30 @@ rr = RRB3()
 led1 = 0
 led2 = 1
 
-while True:
-    rr.set_led1(led1)
-    rr.set_led2(1)
+canRun = True
 
-    led_tmp = led2
-    led2 = led1
-    led1 = led_tmp
 
-    time.sleep(0.02)
+logger = logging.getLogger()
+counter = 0
+while canRun:
+    try:
+
+        rr.set_led1(led1)
+        rr.set_led2(1)
+
+        tmp = led2
+        led2 = led1
+        led1 = tmp
+
+        time.sleep(0.5)
+
+        counter += 1
+        if counter > 20:
+            break
+
+        logger.info("switch")
+    except RuntimeError:
+        logger.error("Runtime Error")
+
+logger.info("Bye")
+
